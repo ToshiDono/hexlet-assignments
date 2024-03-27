@@ -25,29 +25,21 @@ public class PostsController {
     private List<Post> posts = Data.getPosts();
 
     @GetMapping("/{id}/posts") // Список страниц
-    public ResponseEntity<List<Post>> index(@PathVariable Integer userId) {
+    public ResponseEntity<List<Post>> index(@PathVariable Integer id) {
         var result = posts.stream()
-                .filter(p -> p.getUserId() == userId).collect(Collectors.toList());
+                .filter(p -> p.getUserId() == id).collect(Collectors.toList());
         return ResponseEntity.ok().body(result);
     }
 
     @PostMapping("/{id}/posts") // Создание страницы
-    public ResponseEntity<Post> create(@PathVariable Integer userId, @RequestBody Post post) {
+    public ResponseEntity<Post> create(@PathVariable Integer id, @RequestBody Post post) {
         Post newPost = new Post();
-        newPost.setUserId(userId);
+        newPost.setUserId(id);
         newPost.setTitle(post.getTitle());
         newPost.setBody(post.getBody());
         newPost.setSlug(post.getSlug());
         posts.add(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
-    }
-
-    @GetMapping("/posts") // Список страниц
-    public ResponseEntity<List<Post>> index() {
-        var result = posts.stream().toList();
-        return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(posts.size()))
-                .body(result);
     }
 }
 // END
