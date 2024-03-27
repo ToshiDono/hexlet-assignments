@@ -21,7 +21,12 @@ public class Application {
     private List<User> users = Data.getUsers();
 
     // BEGIN
-    
+    @Autowired
+    private UserProperties admins;
+    @GetMapping("/admins")
+    public List<String> showAdmins() {
+        return admins.getAdmins();
+    }
     // END
 
     @GetMapping("/users")
