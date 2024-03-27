@@ -43,8 +43,10 @@ public class PeopleController {
 
 
     @DeleteMapping("/{id}")
-    public void destroy(@PathVariable String id) {
-        personRepository.deleteById(Long.getLong(id));
+    public void destroy(@PathVariable Long id) {
+        var person = personRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Person by id %s not exist".formatted(id)));
+        personRepository.deleteById(person.getId());
     }
     // END
 }
