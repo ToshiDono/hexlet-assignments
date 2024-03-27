@@ -1,7 +1,9 @@
 package exercise;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +27,15 @@ public class Application {
     private UserProperties admins;
     @GetMapping("/admins")
     public List<String> showAdmins() {
-        return admins.getAdmins();
+
+        List<String> result = new ArrayList<>();
+        result = users.stream()
+                .filter(user -> admins.getAdmins().contains(user.getEmail()))
+                .map(User::getName)
+                .sorted()
+                .collect(Collectors.toList());
+
+        return result;
     }
     // END
 
