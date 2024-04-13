@@ -24,7 +24,7 @@ public class ProductsController {
     // BEGIN
     @GetMapping(path = "")
     public List<Product> index(@RequestParam Integer min, @RequestParam Integer max) {
-        return productRepository.findAllByPriceBetweenOrderByAsc(min, max);
+        return productRepository.findAllByPriceBetweenOrderByPriceAsc(min, max);
     }
     // END
 
