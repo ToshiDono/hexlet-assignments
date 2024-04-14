@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 import exercise.model.Comment;
 import exercise.repository.CommentRepository;
@@ -33,8 +34,12 @@ public class CommentsController {
     }
 
     @GetMapping("/{id}")
-    public Comment show(@PathVariable Long id) {
-        return commentRepository.findById(id).get();
+    public ResponseEntity<Comment> show(@PathVariable Long id) {
+
+        var maybeComment = commentRepository.findById(id);
+        if (maybeComment.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().body(maybeComment.get());
     }
 
     @PostMapping("")
@@ -48,10 +53,10 @@ public class CommentsController {
         var maybeComment = commentRepository.findById(id);
         if (maybeComment.isPresent()) {
             var comment = maybeComment.get();
-            comment.setId(data.getId());
             comment.setBody(data.getBody());
-            Comment createdComment = commentRepository.save(comment);
-            return ResponseEntity.ok().body(createdComment);
+            comment.setPostId(data.getPostId());
+            commentRepository.save(comment);
+            return ResponseEntity.ok().body(comment);
         }
         return ResponseEntity.noContent().build();
     }
@@ -59,7 +64,7 @@ public class CommentsController {
     @DeleteMapping("/{id}")
     public void destroy(@PathVariable Long id) {
         var comment = commentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Comment by id %s not exist".formatted(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment by id %s not exist".formatted(id)));
         commentRepository.deleteById(comment.getId());
     }
 }

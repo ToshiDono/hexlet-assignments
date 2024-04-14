@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 import exercise.model.Post;
 import exercise.repository.PostRepository;
@@ -37,8 +38,10 @@ public class PostsController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public Post show(@PathVariable Long id) {
-        return postRepository.findById(id).get();
+        return postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post with id %s not found".formatted(id)));
     }
 
     @PostMapping("")
@@ -52,7 +55,6 @@ public class PostsController {
         var maybePost = postRepository.findById(id);
         if (maybePost.isPresent()) {
             var post = maybePost.get();
-            post.setId(data.getId());
             post.setTitle(data.getTitle());
             post.setBody(data.getBody());
             Post createdPost = postRepository.save(post);
@@ -64,7 +66,7 @@ public class PostsController {
     @DeleteMapping("/{id}")
     public void destroy(@PathVariable Long id) {
         var post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Post by id %s not exist".formatted(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Post by id %s not exist".formatted(id)));
 
         commentRepository.deleteByPostId(id);
         postRepository.deleteById(post.getId());
