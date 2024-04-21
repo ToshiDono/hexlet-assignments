@@ -24,10 +24,10 @@ public class ProductSpecification {
                 : cb.equal(root.get("category").get("id"), categoryId);
     }
 
-    private Specification<Product> withTitleCont(String titleCont) {
-        return (root, query, cb) -> titleCont == null
+    private Specification<Product> withTitleCont(String substring) {
+        return (root, query, cb) -> substring == null
                 ? cb.conjunction()
-                : cb.equal(root.get("titleCont"), titleCont);
+                : cb.like(cb.lower(root.get("title")), "%" + substring + "%");
     }
 
     private Specification<Product> withPriceLt(Integer price) {
